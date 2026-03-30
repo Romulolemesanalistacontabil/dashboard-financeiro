@@ -1,0 +1,3807 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Executivo - Analista Contábil Pleno Rômulo Lemes</title>
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at top right, #1e1b4b, #0f0c29, #020617);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.3);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    .header-title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #fff, var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-title p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      overflow-x: auto;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding: 4px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      width: fit-content;
+      max-width: 100%;
+      scrollbar-width: none;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    /* Tab Content Visibility */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Grid Layouts */
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* KPI Specifics */
+    .kpi-value {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-footer {
+      font-size: 0.8125rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .trend-up {
+      color: var(--success);
+    }
+
+    .trend-down {
+      color: var(--danger);
+    }
+
+    /* Section Titles */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Lists & Items */
+    .insight-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .insight-item {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .insight-item h4 {
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .insight-item p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .insight-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      border-bottom: 1px solid var(--glass-border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    tr.header-row td {
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.03);
+    }
+
+    tr.highlight-row td {
+      font-weight: 800;
+      font-size: 0.9375rem;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* Indices Grid */
+    .indices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .index-card {
+      padding-bottom: 1rem;
+    }
+
+    .index-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .index-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .index-badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-bom {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    .badge-atencao {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .badge-ruim {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .badge-info {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+    }
+
+    .index-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .index-formula {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .index-interpret {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--glass-border);
+    }
+
+    /* Action Plan Card */
+    .action-plan {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 58, 138, 0.1));
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .action-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .action-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Export Button */
+    .export-btn {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 0.625rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    /* Utility */
+    .text-danger {
+      color: var(--danger) !important;
+    }
+
+    .text-success {
+      color: var(--success) !important;
+    }
+
+    .text-warning {
+      color: var(--warning) !important;
+    }
+
+    .text-info {
+      color: var(--accent) !important;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    /* Print & PDF Export Styles */
+    @media print {
+      body {
+        background: #020617 !important;
+        color: #f8fafc !important;
+      }
+
+      .card {
+        background: #0f172a !important;
+        border: 1px solid #1e293b !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        break-inside: avoid;
+        margin-bottom: 2rem;
+      }
+
+      .tab-content {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .tabs-nav,
+      .export-btn {
+        display: none !important;
+      }
+    }
+
+    .export-mode {
+      background: #020617 !important;
+      color: #f8fafc !important;
+    }
+
+    .export-mode .card {
+      background: #0f172a !important;
+      border: 1px solid #1e293b !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      break-inside: avoid;
+      margin-bottom: 2rem;
+    }
+
+    .export-mode .tab-content {
+      display: block !important;
+      opacity: 1 !important;
+      transform: none !important;
+      margin-bottom: 3rem;
+    }
+
+    .export-mode .tabs-nav,
+    .export-mode .export-btn {
+      display: none !important;
+    }
+
+    .export-mode .page-break {
+      page-break-before: always;
+      clear: both;
+    }
+
+    .export-mode .header-title h1 {
+      -webkit-text-fill-color: #f8fafc !important;
+      color: #f8fafc !important;
+    }
+
+    .export-mode .insight-item {
+      background: #1e293b !important;
+      border-left-width: 6px !important;
+    }
+
+    .export-mode .highlight-row td {
+      background: #1e293b !important;
+    }
+
+    /* ============================================
+   RESPONSIVE - Tablets (max-width: 1024px)
+   ============================================ */
+    @media (max-width: 1024px) {
+
+      .main-grid,
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================
+   RESPONSIVE - Celulares (max-width: 768px)
+   ============================================ */
+    @media (max-width: 768px) {
+      body {
+        padding: 0.75rem;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .header-title h1 {
+        font-size: 1.375rem;
+      }
+
+      .header-title p {
+        font-size: 0.75rem;
+      }
+
+      .export-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Tabs: scroll horizontal no mobile */
+      .tabs-nav {
+        width: 100%;
+        padding: 3px;
+        gap: 0.25rem;
+      }
+
+      .tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        gap: 0.25rem;
+      }
+
+      /* KPIs */
+      .grid-kpi {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .kpi-value {
+        font-size: 1.25rem;
+      }
+
+      .card {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .card-title {
+        font-size: 0.6875rem;
+      }
+
+      .kpi-footer {
+        font-size: 0.6875rem;
+      }
+
+      /* Charts */
+      .main-grid,
+      .grid-2col {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .section-header h2 {
+        font-size: 0.9375rem;
+        gap: 0.5rem;
+      }
+
+      /* Tables */
+      table {
+        font-size: 0.6875rem;
+      }
+
+      th,
+      td {
+        padding: 0.5rem 0.625rem;
+      }
+
+      /* Indices */
+      .indices-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .index-value {
+        font-size: 1.25rem;
+      }
+
+      /* Action items */
+      .action-item {
+        gap: 0.75rem;
+      }
+
+      .action-icon {
+        width: 28px;
+        height: 28px;
+      }
+
+      .insight-item {
+        padding: 0.75rem;
+      }
+
+      .insight-item h4 {
+        font-size: 0.8125rem;
+      }
+
+      .insight-item p {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* ============================================
+   RESPONSIVE - Celulares Pequenos (max-width: 480px)
+   ============================================ */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      .header-title h1 {
+        font-size: 1.125rem;
+      }
+
+      .grid-kpi {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+
+      .kpi-value {
+        font-size: 1rem;
+        word-break: break-all;
+      }
+
+      .card {
+        padding: 0.75rem;
+      }
+
+      .tab-btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.6875rem;
+      }
+
+      /* Hide tab icons on very small screens */
+      .tab-btn svg {
+        display: none;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .section-header h2 {
+        font-size: 0.8125rem;
+      }
+
+      .indices-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .index-name {
+        font-size: 0.75rem;
+      }
+
+      .index-value {
+        font-size: 1.125rem;
+      }
+
+      .index-interpret {
+        font-size: 0.6875rem;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+  <div class="dashboard-container" id="report-content">
+    <header>
+      <div class="header-title">
+        <h1>Dashboard Executivo - Analista Contábil Pleno Rômulo Lemes </h1>
+        <p>Análise de Performance Corporativa | Período: Janeiro - Fevereiro 2026</p>
+      </div>
+      <button class="export-btn" onclick="exportPDF()">
+        <i data-lucide="download" style="width: 18px"></i> Exportar Relatório PDF
+      </button>
+    </header>
+
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('resumo-inicial')">
+        <i data-lucide="layout-dashboard" style="width: 18px"></i> Visão Geral
+      </button>
+      <button class="tab-btn" onclick="switchTab('dre-tab')">
+        <i data-lucide="file-text" style="width: 18px"></i> D.R.E Detalhada
+      </button>
+      <button class="tab-btn" onclick="switchTab('balancete-tab')">
+        <i data-lucide="table" style="width: 18px"></i> Balancete Operacional
+      </button>
+      <button class="tab-btn" onclick="switchTab('indices-tab')">
+        <i data-lucide="bar-chart-big" style="width: 18px"></i> Índices & Solvência
+      </button>
+      <button class="tab-btn" onclick="switchTab('resumo-final')">
+        <i data-lucide="target" style="width: 18px"></i> Parecer Técnico
+      </button>
+    </nav>
+
+    <!-- TAB: Resumo Inicial -->
+    <main id="resumo-inicial" class="tab-content active">
+      <div class="grid-kpi">
+        <div class="card">
+          <div class="card-title">Prejuízo Acumulado (Jan-Fev)</div>
+          <div class="kpi-value" id="kpi-res-acumulado">-</div>
+          <div class="kpi-footer text-success">
+            <i data-lucide="trending-down" style="width: 14px"></i> Requer Atenção Imediata
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Receita Líquida (Fevereiro)</div>
+          <div class="kpi-value" id="kpi-receita-atual">-</div>
+          <div class="kpi-footer text-success">
+            <i data-lucide="trending-down" style="width: 14px"></i> Performance em Queda
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">EBITDA Estimado</div>
+          <div class="kpi-value" id="kpi-ebitda">-</div>
+          <div class="kpi-footer text-danger">
+            <i data-lucide="alert-triangle" style="width: 14px"></i> Atenção ao Operacional
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Margem Bruta (Anual)</div>
+          <div class="kpi-value" id="kpi-margem-bruta">-</div>
+          <div class="kpi-footer text-success">
+            <i data-lucide="trending-down" style="width: 14px"></i> Alinhado ao Período
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Margem Líquida</div>
+          <div class="kpi-value" id="kpi-margem-liquida">-</div>
+          <div class="kpi-footer text-success">
+            <i data-lucide="alert-circle" style="width: 14px"></i> Déficit de 7,1%
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Liquidez Corrente</div>
+          <div class="kpi-value" id="kpi-liquidez-corrente">-</div>
+          <div class="kpi-footer text-success">
+            <i data-lucide="alert-triangle" style="width: 14px"></i> Margem Mínima (1.05)
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Giro Estoque (Dias)</div>
+          <div class="kpi-value" id="kpi-giro-estoque">-</div>
+          <div class="kpi-footer text-info">
+            <i data-lucide="package" style="width: 14px"></i> Ciclo de 35 dias
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">PMR (Recebimento)</div>
+          <div class="kpi-value" id="kpi-pmr">-</div>
+          <div class="kpi-footer text-warning">
+            <i data-lucide="clock" style="width: 14px"></i> Ciclo de 60 dias
+          </div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="line-chart"></i> Evolução de Resultados (Mensal vs Acumulado)</h2>
+          </div>
+          <div id="chart-evolution" style="min-height: 350px;"></div>
+        </div>
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="pie-chart"></i> Composição da Receita</h2>
+          </div>
+          <div id="chart-revenue-mix" style="min-height: 350px;"></div>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="zap"></i> Alertas de Variações Críticas</h2>
+          </div>
+          <div id="chart-variations" style="min-height: 300px;"></div>
+        </div>
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="lightbulb"></i> Insights de Performance (Jan-Fev 2026)</h2>
+          </div>
+          <div class="insight-list">
+            <div class="insight-item">
+              <span class="insight-status badge-bom">Destaque Positivo</span>
+              <h4>Análise de Receita Jan-Fev</h4>
+              <p>Manutenção de receita estável em R$ 4.7M/mês, reduzindo o risco de crédito e melhorando a
+                liquidez imediata.</p>
+            </div>
+            <div class="insight-item" style="border-left-color: var(--danger)">
+              <span class="insight-status badge-ruim">Ponto Crítico</span>
+              <h4>Pressão na Folha de Pagamento</h4>
+              <p>Salto de R$ 58k para R$ 249k (+329%) em <strong>Prêmios e Férias</strong> em Fevereiro.
+                Necessário revisar a política de bonificação mensal.</p>
+            </div>
+            <div class="insight-item" style="border-left-color: var(--warning)">
+              <span class="insight-status badge-atencao">Eficiência em Custos</span>
+              <h4>Controle de Margem Bruta</h4>
+              <p>Margem bruta estável em 33.2% em Fevereiro, indicando que o problema não é o preço de
+                venda, mas sim as despesas fixas/folha.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB: DRE -->
+    <div class="page-break"></div>
+    <main id="dre-tab" class="tab-content">
+      <div class="main-grid">
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="list-tree"></i> Demonstrativo de Resultados do Exercício (Comparativo)</h2>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Descrição da Conta</th>
+                  <th>Janeiro</th>
+                  <th>Fevereiro</th>
+                </tr>
+              </thead>
+              <tbody id="dre-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="pie-chart"></i> Composição Financeira (Jan-Fev)</h2>
+          </div>
+          <div id="chart-expenses-mix" style="min-height: 400px;"></div>
+          <div class="mt-4">
+            <p style="font-size: 0.875rem; color: var(--text-secondary)">
+              A estrutura de gastos de Fevereiro foi impactada pelo aumento em <strong>Premios e
+                Férias</strong>, que representaram um salto significativo no custo operacional.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB: Balancete -->
+    <div class="page-break"></div>
+    <main id="balancete-tab" class="tab-content">
+      <div class="card">
+        <div class="section-header">
+          <h2><i data-lucide="columns"></i> Balancete Operacional Analítico</h2>
+          <span style="font-size: 0.75rem; color: var(--text-secondary)">Valores em R$ (Reais)</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Conta</th>
+                <th>Descrição</th>
+                <th>Saldo Anterior</th>
+                <th>Débito</th>
+                <th>Crédito</th>
+                <th>Saldo Atual</th>
+              </tr>
+            </thead>
+            <tbody id="balancete-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB: Indices -->
+    <div class="page-break"></div>
+    <main id="indices-tab" class="tab-content">
+      <div class="card" style="margin-bottom: 2rem; background: rgba(56, 189, 248, 0.05)">
+        <div class="section-header">
+          <h2><i data-lucide="shield-check"></i> Dashboard de Solvência e Performance</h2>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+          Indicadores calculados com base no Balanço de Fevereiro/2026. Refletem a saúde financeira de curto,
+          médio e longo prazo.
+        </p>
+        <div class="indices-grid" id="indices-container"></div>
+      </div>
+    </main>
+
+    <!-- TAB: Resumo Final -->
+    <div class="page-break"></div>
+    <main id="resumo-final" class="tab-content">
+      <div class="grid-2col" id="parecer-tecnico-section">
+        <div class="card">
+          <div class="section-header">
+            <h2><i data-lucide="file-signature"></i> Parecer Técnico do Auditor</h2>
+          </div>
+          <div class="insight-list">
+            <div class="insight-item" style="border-left-color: var(--danger)">
+              <span class="insight-status badge-ruim" style="background: var(--danger); color: #fff">ALTA
+                PRIORIDADE</span>
+              <h4>1. Fragilidade na Estrutura de Capital</h4>
+              <p>A <strong>Empresa</strong> apresenta um nível de endividamento de
+                <strong>97,6%</strong>, operando quase exclusivamente com capital de terceiros. Com uma
+                <strong>Liquidez Corrente de 1.05</strong>, a margem de segurança é mínima, tornando a
+                operação vulnerável a qualquer atraso no recebimento de convênios.
+              </p>
+            </div>
+            <div class="insight-item" style="border-left-color: var(--warning)">
+              <span class="insight-status badge-atencao" style="background: var(--warning); color: #000">ANÁLISE DE
+                CUSTOS OPERACIONAIS</span>
+              <h4>2. Explosão de Despesas em Fevereiro</h4>
+              <p>O prejuízo operacional de Fevereiro (R$ 483k) foi impulsionado por um aumento atípico em
+                <strong>Prêmios Diversos (+500%)</strong> e <strong>Férias (+200%)</strong>. Esses dois
+                grupos consumiram R$ 249k em um único mês, deteriorando o resultado líquido acumulado.
+              </p>
+            </div>
+            <div class="insight-item" style="border-left-color: var(--accent)">
+              <span class="insight-status badge-bom" style="background: var(--accent); color: #000">CICLO
+                FINANCEIRO</span>
+              <h4>3. Descompasso de Prazos (Gap de Caixa)</h4>
+              <p>O ciclo financeiro apresenta um gap de <strong>15 dias</strong> (Recebimento em 60 dias
+                vs Pagamento em 45 dias). Este descasamento, somado ao prejuízo acumulado de <strong>R$
+                  679k</strong>, exige captação de recursos externos ou aporte de capital para manter
+                o giro.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card action-plan">
+          <div class="section-header">
+            <h2><i data-lucide="rocket"></i> Plano de Ações Estratégicas</h2>
+          </div>
+          <div class="action-item">
+            <div class="action-icon"><i data-lucide="zoom-in" size="16"></i></div>
+            <div>
+              <h4 style="color: var(--accent)">Auditoria em Serviços PJ</h4>
+              <p style="font-size: 0.875rem">Identificar a natureza do aumento de +620% em serviços
+                terceirizados para evitar vazamentos de caixa.</p>
+            </div>
+          </div>
+          <div class="action-item">
+            <div class="action-icon"><i data-lucide="trending-down" size="16"></i></div>
+            <div>
+              <h4 style="color: var(--accent)">Redução do Endividamento de Curto Prazo</h4>
+              <p style="font-size: 0.875rem">Negociar alongamento de prazos com os principais fornecedores
+                para melhorar o caixa livre.</p>
+            </div>
+          </div>
+          <div class="action-item">
+            <div class="action-icon"><i data-lucide="shield-alert" size="16"></i></div>
+            <div>
+              <h4 style="color: var(--accent)">Saneamento de Custos de Pessoal</h4>
+              <p style="font-size: 0.875rem">Revisar a política de "Prêmios Diversos" e escalonamento de
+                férias para evitar picos de desembolso como o ocorrido em Fevereiro.</p>
+            </div>
+          </div>
+          <div class="action-item">
+            <div class="action-icon" style="background: var(--success)"><i data-lucide="check" size="16"></i></div>
+            <div>
+              <h4 style="color: var(--success)">Otimização do Capital de Giro</h4>
+              <p style="font-size: 0.875rem">Manter o giro de estoque em 35 dias, mas buscar antecipação
+                de recebíveis para cobrir o gap de 15 dias com fornecedores.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- EMBEDDED DATA -->
+  <script id="dashboard-data" type="application/json">
+{
+  "empresa": "L.M CARAMANTI & CIA LTDA",
+  "periodo": "Janeiro - Fevereiro 2026",
+  "balanco": {
+    "ativo": {
+      "total": 41891212.0,
+      "circulante": 32881160.83
+    },
+    "passivo": {
+      "total": 40893844.69,
+      "circulante": 31199164.48
+    },
+    "pl": 9641283.69
+  },
+  "kpis_avancados": {
+    "ebitda": -679048.08,
+    "margem_liquida": -7.19,
+    "giro_estoque_dias": 35.0,
+    "prazos": {
+      "recebimento": 60,
+      "pagamento": 45
+    }
+  },
+  "indices": {
+    "liquidez": [
+      {
+        "nome": "Liquidez Corrente",
+        "valor": 1.05,
+        "status": "bom",
+        "interpretacao": "Capacidade de R$ 1.05 para cada R$ 1,00 de dívida."
+      },
+      {
+        "nome": "Liquidez Seca",
+        "valor": 0.93,
+        "status": "bom"
+      },
+      {
+        "nome": "Liquidez Imediata",
+        "valor": 0.009,
+        "status": "ruim"
+      }
+    ],
+    "endividamento": [
+      {
+        "nome": "Endividamento Total",
+        "valor": 97.6,
+        "status": "atencao",
+        "sufixo": "%"
+      },
+      {
+        "nome": "Grau de Endividamento",
+        "valor": 4.24,
+        "status": "ruim"
+      }
+    ],
+    "rentabilidade": [
+      {
+        "nome": "Margem Bruta (Acum)",
+        "valor": 30.3,
+        "status": "bom",
+        "sufixo": "%"
+      },
+      {
+        "nome": "ROE (Retorno s/ PL)",
+        "valor": -7.0,
+        "status": "atencao",
+        "sufixo": "%"
+      },
+      {
+        "nome": "Margem Líquida",
+        "valor": -7.19,
+        "status": "ruim",
+        "sufixo": "%"
+      }
+    ],
+    "atividade": [
+      {
+        "nome": "Giro do Ativo",
+        "valor": 0.23,
+        "status": "bom"
+      },
+      {
+        "nome": "Estoque / Ativo",
+        "valor": 9.3,
+        "status": "info",
+        "sufixo": "%"
+      }
+    ]
+  },
+  "dre": [
+    {
+      "descricao": "RECEITA LÍQUIDA",
+      "jan": 4744506.799999999,
+      "feb": 4704474.159999999,
+      "destaque": true
+    },
+    {
+      "descricao": "(-) CMV",
+      "jan": -3445058.16,
+      "feb": -3141500.47
+    },
+    {
+      "descricao": "= LUCRO BRUTO",
+      "jan": 1299448.6399999987,
+      "feb": 1562973.689999999,
+      "destaque": true
+    },
+    {
+      "descricao": "= RESULTADO LÍQUIDO",
+      "jan": -195727.22000000117,
+      "feb": -483730.8600000009,
+      "destaque": true
+    }
+  ],
+  "resultado_mensal": {
+    "meses": [
+      "Jan",
+      "Fev"
+    ],
+    "resultado": [
+      -195727.22,
+      -483730.86
+    ],
+    "acumulado": [
+      -195727.22,
+      -679458.08
+    ]
+  },
+  "composicao_receitas": {
+    "labels": [
+      "Jan",
+      "Fev"
+    ],
+    "valores_dez": [
+      4744506.799999999,
+      4704474.159999999
+    ]
+  },
+  "composicao_despesas": {
+    "labels": [
+      "Custos (CMV)",
+      "Resultado"
+    ],
+    "valores_dez": [
+      6586558.630000001,
+      679458.080000002
+    ]
+  },
+  "variacoes": [
+    {
+      "label": "Receita",
+      "values": [
+        4744506.799999999,
+        4704474.159999999
+      ]
+    },
+    {
+      "label": "Resultado",
+      "values": [
+        -195727.22000000117,
+        -483730.8600000009
+      ]
+    }
+  ],
+  "balancete": [
+    {
+      "conta": "1.0.0.00.000",
+      "descricao": "ATIVO",
+      "ant": 41441305.35,
+      "deb": 23486651.75,
+      "cre": 23036745.1,
+      "at": 41891212.0,
+      "h": true
+    },
+    {
+      "conta": "1.1.0.00.000",
+      "descricao": "ATIVO CIRCULANTE",
+      "ant": 32431049.16,
+      "deb": 23486651.75,
+      "cre": 23036540.08,
+      "at": 32881160.83,
+      "h": true
+    },
+    {
+      "conta": "1.1.1.00.000",
+      "descricao": "DISPONIVEL",
+      "ant": 256056.84,
+      "deb": 8357448.59,
+      "cre": 8332448.11,
+      "at": 281057.32,
+      "h": true
+    },
+    {
+      "conta": "1.1.1.01.000",
+      "descricao": "CAIXA GERAL",
+      "ant": 166118.5,
+      "deb": 914111.05,
+      "cre": 909185.93,
+      "at": 171043.62,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.01.001",
+      "descricao": "CAIXA",
+      "ant": 166118.5,
+      "deb": 914111.05,
+      "cre": 909185.93,
+      "at": 171043.62,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.000",
+      "descricao": "BANCOS C/MOVIMENTO",
+      "ant": 88331.47,
+      "deb": 7443337.54,
+      "cre": 7423262.18,
+      "at": 108406.83,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.036",
+      "descricao": "BRADESCO - AG 3372-3 - C/C 140000-2 - L.M. CARAMANTI & CIA LTDA",
+      "ant": 2907.58,
+      "deb": 1168777.55,
+      "cre": 1148310.75,
+      "at": 23374.38,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.041",
+      "descricao": "ITAU - AG 0076 - C/C 61119-3 - L.M. CARAMANTI & CIA LTDA",
+      "ant": 20148.85,
+      "deb": 4172177.46,
+      "cre": 4177640.39,
+      "at": 14685.92,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.059",
+      "descricao": "CEF - AG 0356 - C/C 201-2 - L.M. CARAMANTI & CIA LTDA",
+      "ant": 15987.3,
+      "deb": 692563.53,
+      "cre": 695119.56,
+      "at": 13431.27,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.071",
+      "descricao": "ITAU - AG 0076 - C/C 67572-7 - CARAMANTI & CARAMANTI LTDA",
+      "ant": 0.0,
+      "deb": 20000.0,
+      "cre": 20000.0,
+      "at": 0.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.097",
+      "descricao": "BB - AG 2414-7 - C/C 6475-0 - L.M. CARAMANTI & CIA LTDA",
+      "ant": 13414.33,
+      "deb": 46610.12,
+      "cre": 51526.32,
+      "at": 8498.13,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.161",
+      "descricao": "SANTANDER - AG 0062 - C/C 13009016-6 - CARAMANTI & CARAMANTI LTDA",
+      "ant": 0.0,
+      "deb": 20000.0,
+      "cre": 0.0,
+      "at": 20000.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.162",
+      "descricao": "SANTANDER - AG 0062 - C/C 1300907-3 - L.M. CARAMANTI & CIA LTDA",
+      "ant": 32902.65,
+      "deb": 671986.21,
+      "cre": 679362.01,
+      "at": 25526.85,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.02.402",
+      "descricao": "BANCO SAFRA 0041/586060-1",
+      "ant": 2970.76,
+      "deb": 651222.67,
+      "cre": 651303.15,
+      "at": 2890.28,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.03.000",
+      "descricao": "APLIC. LIQUIDEZ IMEDIATA",
+      "ant": 1606.87,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 1606.87,
+      "h": false
+    },
+    {
+      "conta": "1.1.1.03.018",
+      "descricao": "BANCO SAFRA S/A",
+      "ant": 1606.87,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 1606.87,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.00.000",
+      "descricao": "REALIZAVEL A CURTO PRAZO",
+      "ant": 32174992.32,
+      "deb": 15129203.16,
+      "cre": 14704091.97,
+      "at": 32600103.51,
+      "h": true
+    },
+    {
+      "conta": "1.1.2.01.000",
+      "descricao": "ESTOQUES DE MERCADORIAS",
+      "ant": 3828867.89,
+      "deb": 3876915.06,
+      "cre": 3814305.26,
+      "at": 3891477.69,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.01.001",
+      "descricao": "ESTOQUES DE MERCADORIAS PARA REVENDA",
+      "ant": 3828867.89,
+      "deb": 3876915.06,
+      "cre": 3814305.26,
+      "at": 3891477.69,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.000",
+      "descricao": "DUPLICATAS A RECEBER",
+      "ant": 17825982.11,
+      "deb": 10276984.16,
+      "cre": 10218995.53,
+      "at": 17883970.74,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.002",
+      "descricao": "CLIENTES A RECEBER",
+      "ant": 59925.6,
+      "deb": 271.35,
+      "cre": 271.35,
+      "at": 59925.6,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.005",
+      "descricao": "CARTOES DE CREDITO A RECEBER",
+      "ant": 1738889.12,
+      "deb": 3699221.82,
+      "cre": 3523020.71,
+      "at": 1915090.23,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.016",
+      "descricao": "CONVENIO A FATURAR",
+      "ant": 2592934.56,
+      "deb": 645568.88,
+      "cre": 493009.64,
+      "at": 2745493.8,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.019",
+      "descricao": "MACER DROGUISTAS LTDA.",
+      "ant": 834592.93,
+      "deb": 17742.66,
+      "cre": 0.0,
+      "at": 852335.59,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.026",
+      "descricao": "CARAMANTI & CARAMANTI",
+      "ant": 223497.99,
+      "deb": 19056.12,
+      "cre": 0.0,
+      "at": 242554.11,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.028",
+      "descricao": "DROGARIA JURUCE",
+      "ant": 171976.72,
+      "deb": 5640.99,
+      "cre": 82986.97,
+      "at": 94630.74,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.035",
+      "descricao": "FARMACIA POPULAR",
+      "ant": 2126066.38,
+      "deb": 492969.79,
+      "cre": 615283.53,
+      "at": 2003752.64,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.046",
+      "descricao": "CARTÃO CONTA CORRENTE FARMA PONTE",
+      "ant": 2211751.35,
+      "deb": 16335.24,
+      "cre": 0.0,
+      "at": 2228086.59,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.047",
+      "descricao": "FARMA PONTE ADM. DE CONVÊNIO",
+      "ant": 5250049.93,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 5250049.93,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.066",
+      "descricao": "IPANEMA DISTRIBUIDORA LTDA",
+      "ant": 2366617.16,
+      "deb": 297484.5,
+      "cre": 358000.81,
+      "at": 2306100.85,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.069",
+      "descricao": "DROGARIA FARMA PONTE LTDA",
+      "ant": 51768.0,
+      "deb": 99.86,
+      "cre": 0.0,
+      "at": 51867.86,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.071",
+      "descricao": "FARMA EXPRESS DROGARIAS LTDA",
+      "ant": 1435.76,
+      "deb": 333.6,
+      "cre": 0.01,
+      "at": 1769.35,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.072",
+      "descricao": "DROGA LEAO CENTRO LTDA",
+      "ant": 110.88,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 110.88,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.075",
+      "descricao": "DROGARIA ILHA BELA HIPER LTDA",
+      "ant": 0.0,
+      "deb": 3459.99,
+      "cre": 0.0,
+      "at": 3459.99,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.076",
+      "descricao": "SOS FARMA PONTE LTDA",
+      "ant": 96148.93,
+      "deb": 51479.73,
+      "cre": 122255.83,
+      "at": 25372.83,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.085",
+      "descricao": "DROGARIA CARAMANTI LTDA",
+      "ant": 5542.85,
+      "deb": 2410.14,
+      "cre": 0.0,
+      "at": 7952.99,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.089",
+      "descricao": "DROGAS MEDICAS DROGARIA E PERFUMARIA LTDA",
+      "ant": 308.53,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 308.53,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.092",
+      "descricao": "MACER E-COMMERCE CLIQUE E RETIRE",
+      "ant": 149546.13,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 149546.13,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.096",
+      "descricao": "MACER APP FARMA PONTE",
+      "ant": 2563.34,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 2563.34,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.02.097",
+      "descricao": "VENDAS TRANSITORIAS",
+      "ant": -57744.05,
+      "deb": 5024909.49,
+      "cre": 5024166.68,
+      "at": -57001.24,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.000",
+      "descricao": "IMPOSTOS A RECUPERAR",
+      "ant": 763938.26,
+      "deb": 524349.75,
+      "cre": 69310.65,
+      "at": 1218977.36,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.001",
+      "descricao": "ICMS A RECUPERAR",
+      "ant": 0.0,
+      "deb": 455039.1,
+      "cre": 0.0,
+      "at": 455039.1,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.002",
+      "descricao": "IRRF A RECUPERAR",
+      "ant": 0.99,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 0.99,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.016",
+      "descricao": "COFINS A RECUPERAR",
+      "ant": 0.0,
+      "deb": 48789.33,
+      "cre": 48789.33,
+      "at": 0.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.017",
+      "descricao": "PIS A RECUPERAR",
+      "ant": 0.0,
+      "deb": 10593.0,
+      "cre": 10593.0,
+      "at": 0.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.045",
+      "descricao": "ESTIMATIVA IRPJ MENSAL",
+      "ant": 556847.99,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 556847.99,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.046",
+      "descricao": "ESTIMATIVA CSLL MENSAL",
+      "ant": 207089.28,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 207089.28,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.03.050",
+      "descricao": "INSS A RECUPERAR",
+      "ant": 0.0,
+      "deb": 9928.32,
+      "cre": 9928.32,
+      "at": 0.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.000",
+      "descricao": "ADIANTAMENTOS",
+      "ant": 114412.99,
+      "deb": 299375.48,
+      "cre": 278779.32,
+      "at": 135009.15,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.001",
+      "descricao": "ADTO. A FORNECEDORES",
+      "ant": 32265.69,
+      "deb": 225.0,
+      "cre": 0.0,
+      "at": 32490.69,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.002",
+      "descricao": "ADTO. A EMPREGADOS",
+      "ant": 14216.01,
+      "deb": 205809.15,
+      "cre": 205028.61,
+      "at": 14996.55,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.004",
+      "descricao": "ADTO. DE FERIAS",
+      "ant": 67931.29,
+      "deb": 78067.22,
+      "cre": 73750.71,
+      "at": 72247.8,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.005",
+      "descricao": "ADTO. DE 13 SALARIO",
+      "ant": 0.0,
+      "deb": 12871.88,
+      "cre": 0.0,
+      "at": 12871.88,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.04.019",
+      "descricao": "QUEBRA CAIXA A RECEBER",
+      "ant": 0.0,
+      "deb": 2402.23,
+      "cre": 0.0,
+      "at": 2402.23,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.000",
+      "descricao": "TITULOS A RECEBER",
+      "ant": 9639507.93,
+      "deb": 150385.08,
+      "cre": 320000.0,
+      "at": 9469893.01,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.007",
+      "descricao": "FARMA PONTE ADM. CONVÊNIOS LTDA.",
+      "ant": 4438816.6,
+      "deb": 148240.4,
+      "cre": 320000.0,
+      "at": 4267057.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.009",
+      "descricao": "MACER DROGUISTAS LTDA.",
+      "ant": 32004.87,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 32004.87,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.010",
+      "descricao": "CARAMANTI & CARAMANTI LTDA.",
+      "ant": 21012.61,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 21012.61,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.011",
+      "descricao": "KESTER PHARMA LTDA",
+      "ant": 15000.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 15000.0,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.033",
+      "descricao": "IPANEMA DISTRIBUIDORA LTDA",
+      "ant": 5126896.63,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 5126896.63,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.034",
+      "descricao": "DROGARIA FARMA PONTE LTDA",
+      "ant": 3624.66,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 3624.66,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.035",
+      "descricao": "DROGA LEAO CENTRO LTDA",
+      "ant": 39.15,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 39.15,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.043",
+      "descricao": "FARMA EXPRESS DROGARIAS LTDA",
+      "ant": 0.0,
+      "deb": 2144.68,
+      "cre": 0.0,
+      "at": 2144.68,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.045",
+      "descricao": "DROGARIA CARAMANTI LTDA",
+      "ant": 2038.93,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 2038.93,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.06.048",
+      "descricao": "DROGAS MEDICAS DROGARIA E PERFUMARIA LTDA",
+      "ant": 74.48,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 74.48,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.07.000",
+      "descricao": "CHEQUES EM COBRANÇA",
+      "ant": 2283.14,
+      "deb": 1193.63,
+      "cre": 2701.21,
+      "at": 775.56,
+      "h": false
+    },
+    {
+      "conta": "1.1.2.07.001",
+      "descricao": "CHEQUES EM COBRANCA",
+      "ant": 2283.14,
+      "deb": 1193.63,
+      "cre": 2701.21,
+      "at": 775.56,
+      "h": false
+    },
+    {
+      "conta": "1.3.0.00.000",
+      "descricao": "NAO CIRCULANTE",
+      "ant": 9010256.19,
+      "deb": 0.0,
+      "cre": 205.02,
+      "at": 9010051.17,
+      "h": true
+    },
+    {
+      "conta": "1.3.2.00.000",
+      "descricao": "IMOBILIZADO",
+      "ant": 9010256.19,
+      "deb": 0.0,
+      "cre": 205.02,
+      "at": 9010051.17,
+      "h": true
+    },
+    {
+      "conta": "1.3.2.02.000",
+      "descricao": "MOVEIS E UTENSILIOS",
+      "ant": 10581.91,
+      "deb": 0.0,
+      "cre": 103.69,
+      "at": 10478.22,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.02.001",
+      "descricao": "MOVEIS E UTENSILIOS",
+      "ant": 38360.27,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 38360.27,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.02.002",
+      "descricao": "(-) DEP. ACUM. MOV. E UTENSILIOS",
+      "ant": -27778.36,
+      "deb": 0.0,
+      "cre": 103.69,
+      "at": -27882.05,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.05.000",
+      "descricao": "MAQUINAS E EQUIPAMENTOS",
+      "ant": 1847.04,
+      "deb": 0.0,
+      "cre": 64.66,
+      "at": 1782.38,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.05.001",
+      "descricao": "MAQUINAS E EQUIPAMENTOS",
+      "ant": 28032.75,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 28032.75,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.05.002",
+      "descricao": "(-) DEP. ACUM. MAQ. E EQUIPAMENTOS",
+      "ant": -26185.71,
+      "deb": 0.0,
+      "cre": 64.66,
+      "at": -26250.37,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.06.000",
+      "descricao": "INSTALAÇOES",
+      "ant": 2163.13,
+      "deb": 0.0,
+      "cre": 36.67,
+      "at": 2126.46,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.06.001",
+      "descricao": "INSTALAÇÕES",
+      "ant": 134798.91,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 134798.91,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.06.002",
+      "descricao": "(-) DEP. ACUM. INSTALACOES",
+      "ant": -132635.78,
+      "deb": 0.0,
+      "cre": 36.67,
+      "at": -132672.45,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.07.001",
+      "descricao": "COMPUTADOR",
+      "ant": 130514.73,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 130514.73,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.07.002",
+      "descricao": "(-) DEP. ACUM. COMPUTADOR",
+      "ant": -130514.73,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -130514.73,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.16.000",
+      "descricao": "BENFEITORIAS E CONSTRUCOES EM PROPRIEDADEDE TERCEIROS EM ANDAMENTO",
+      "ant": 8995664.11,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 8995664.11,
+      "h": false
+    },
+    {
+      "conta": "1.3.2.16.001",
+      "descricao": "BENFEITORIAS E CONSTRUCOES EM PROPR. DE TERCEIROS EM ANDAMENTO",
+      "ant": 8995664.11,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 8995664.11,
+      "h": false
+    },
+    {
+      "conta": "2.0.0.00.000",
+      "descricao": "PASSIVO",
+      "ant": -39960207.18,
+      "deb": 7113022.53,
+      "cre": 8046660.04,
+      "at": -40893844.69,
+      "h": true
+    },
+    {
+      "conta": "2.1.0.00.000",
+      "descricao": "CIRCULANTE",
+      "ant": -30265526.97,
+      "deb": 7113022.53,
+      "cre": 8046660.04,
+      "at": -31199164.48,
+      "h": true
+    },
+    {
+      "conta": "2.1.1.00.000",
+      "descricao": "CREDITO DE FUNCIONAMENTO",
+      "ant": -30265526.97,
+      "deb": 7113022.53,
+      "cre": 8046660.04,
+      "at": -31199164.48,
+      "h": true
+    },
+    {
+      "conta": "2.1.1.01.000",
+      "descricao": "C/C FORNECEDORES",
+      "ant": -25224952.57,
+      "deb": 4510574.47,
+      "cre": 4708450.61,
+      "at": -25422828.71,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.001",
+      "descricao": "FORNECEDORES",
+      "ant": -347141.76,
+      "deb": 363136.73,
+      "cre": 248937.04,
+      "at": -232942.07,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.003",
+      "descricao": "OUTRAS CONTAS A PAGAR",
+      "ant": -1714904.25,
+      "deb": 165839.62,
+      "cre": 530325.58,
+      "at": -2079390.21,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.004",
+      "descricao": "ALUGUEL LOJAS",
+      "ant": 0.0,
+      "deb": 286721.86,
+      "cre": 286721.86,
+      "at": 0.0,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.005",
+      "descricao": "(-) COMPRAS ANULADAS A PRAZO",
+      "ant": 5585.8,
+      "deb": 271.35,
+      "cre": 271.35,
+      "at": 5585.8,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.008",
+      "descricao": "DEVOLUCAO CLIENTES",
+      "ant": -377614.54,
+      "deb": 14604.9,
+      "cre": 23556.19,
+      "at": -386565.83,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.009",
+      "descricao": "MACER DROGUISTAS LTDA",
+      "ant": -792482.09,
+      "deb": 0.0,
+      "cre": 22148.97,
+      "at": -814631.06,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.011",
+      "descricao": "CARAMANTI & CARAMANTI LTDA",
+      "ant": -237233.35,
+      "deb": 0.0,
+      "cre": 20663.7,
+      "at": -257897.05,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.013",
+      "descricao": "DROGARIA JURUCE LTDA",
+      "ant": -105277.36,
+      "deb": 0.0,
+      "cre": 8816.96,
+      "at": -114094.32,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.015",
+      "descricao": "DROGARIA FARMA PONTE LTDA",
+      "ant": -12160.16,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -12160.16,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.016",
+      "descricao": "DROGA LEAO CENTRO LTDA",
+      "ant": -15778.35,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -15778.35,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.019",
+      "descricao": "DROGARIA ILHA BELA HIPER LTDA",
+      "ant": -4054.69,
+      "deb": 0.0,
+      "cre": 1046.46,
+      "at": -5101.15,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.021",
+      "descricao": "IPANEMA DISTRIBUIDORA LTDA",
+      "ant": -21503127.58,
+      "deb": 3680000.0,
+      "cre": 3556111.79,
+      "at": -21379239.37,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.025",
+      "descricao": "FARMA EXPRESS DROGARIAS LTDA",
+      "ant": -6895.75,
+      "deb": 0.01,
+      "cre": 2935.59,
+      "at": -9831.33,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.026",
+      "descricao": "SOS FARMA PONTE LTDA",
+      "ant": -36283.35,
+      "deb": 0.0,
+      "cre": 5027.13,
+      "at": -41310.48,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.029",
+      "descricao": "DROGARIA CARAMANTILTDA",
+      "ant": -76098.93,
+      "deb": 0.0,
+      "cre": 1887.99,
+      "at": -77986.92,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.01.030",
+      "descricao": "DROGAS MEDICAS DROGARIA E PERFUMARIA LTDA",
+      "ant": -1486.21,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -1486.21,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.000",
+      "descricao": "OBRIGAÇOES COM PESSOAL",
+      "ant": -2008603.68,
+      "deb": 1040781.48,
+      "cre": 1261979.39,
+      "at": -2229801.59,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.001",
+      "descricao": "SALARIOS E ORDENADOS A PAGAR",
+      "ant": -299172.0,
+      "deb": 831817.98,
+      "cre": 823388.98,
+      "at": -290743.0,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.004",
+      "descricao": "RESCISAO DE CONTRATO A PAGAR",
+      "ant": -7627.85,
+      "deb": 42714.64,
+      "cre": 47648.44,
+      "at": -12561.65,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.013",
+      "descricao": "13º SALÁRIO A PAGAR",
+      "ant": -56650.9,
+      "deb": 5635.03,
+      "cre": 61382.01,
+      "at": -112397.88,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.015",
+      "descricao": "FÉRIAS A PAGAR",
+      "ant": -691448.55,
+      "deb": 114965.42,
+      "cre": 107628.16,
+      "at": -684111.29,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.022",
+      "descricao": "EMPRÉSTIMOS CONSIGNADOS DESCONTO EM FOLHA",
+      "ant": -3254.32,
+      "deb": 370.65,
+      "cre": 717.16,
+      "at": -3600.83,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.031",
+      "descricao": "VALE TRANSPORTE A PAGAR",
+      "ant": -196030.07,
+      "deb": 0.0,
+      "cre": 20690.6,
+      "at": -216720.67,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.032",
+      "descricao": "VALE REFEIÇÃO A PAGAR",
+      "ant": -100403.0,
+      "deb": 0.0,
+      "cre": 8568.0,
+      "at": -108971.0,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.033",
+      "descricao": "PREMIAÇÃO A PAGAR",
+      "ant": -387998.14,
+      "deb": 0.0,
+      "cre": 125335.48,
+      "at": -513333.62,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.034",
+      "descricao": "VALE ALIMENTAÇÃO A PAGAR",
+      "ant": -235710.0,
+      "deb": 0.0,
+      "cre": 20020.0,
+      "at": -255730.0,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.02.035",
+      "descricao": "EMPREST. CREDITO TRABALHADOR",
+      "ant": -30308.85,
+      "deb": 45277.76,
+      "cre": 46600.56,
+      "at": -31631.65,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.000",
+      "descricao": "IMPOSTOS E CONTRIBUICOES A RECOLHER",
+      "ant": -1753666.56,
+      "deb": 1551621.59,
+      "cre": 2001691.99,
+      "at": -2203736.96,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.001",
+      "descricao": "I.N.S.S. A RECOLHER",
+      "ant": -1117361.79,
+      "deb": 1133126.94,
+      "cre": 256005.07,
+      "at": -240239.92,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.002",
+      "descricao": "PIS - COFINS - CSLL A RECOLHER (RET. LEI 10.833)",
+      "ant": -41.54,
+      "deb": 41.54,
+      "cre": 11.19,
+      "at": -11.19,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.003",
+      "descricao": "F.G.T.S. A RECOLHER",
+      "ant": -44962.73,
+      "deb": 75093.84,
+      "cre": 74720.15,
+      "at": -44589.04,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.004",
+      "descricao": "SIND. DOS EMPR. A RECOLHER",
+      "ant": -3880.45,
+      "deb": 238.5,
+      "cre": 2006.69,
+      "at": -5648.64,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.005",
+      "descricao": "I.C.M.S. A RECOLHER",
+      "ant": -188529.74,
+      "deb": 189132.14,
+      "cre": 615418.77,
+      "at": -614816.37,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.006",
+      "descricao": "ICMS SUBST. TRIB. A RECOLHER",
+      "ant": 0.0,
+      "deb": 0.0,
+      "cre": 17.0,
+      "at": -17.0,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.061",
+      "descricao": "COFINS A RECOLHER",
+      "ant": -14480.5,
+      "deb": 74924.6,
+      "cre": 75023.97,
+      "at": -14579.87,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.063",
+      "descricao": "PIS A RECOLHER",
+      "ant": -3109.89,
+      "deb": 16338.04,
+      "cre": 16301.4,
+      "at": -3073.25,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.077",
+      "descricao": "I.S.S. A RECOLHER",
+      "ant": -638.9,
+      "deb": 140.37,
+      "cre": 1495.58,
+      "at": -1994.11,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.081",
+      "descricao": "ESTIMATIVA IRPJ MENSAL A RECOLHER",
+      "ant": -150029.82,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -150029.82,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.083",
+      "descricao": "ESTIMATIVA CSLL MENSAL A RECOLHER",
+      "ant": -58042.73,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -58042.73,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.091",
+      "descricao": "I.R.R.F. A RECOLHER",
+      "ant": -41471.38,
+      "deb": 35890.85,
+      "cre": 27114.78,
+      "at": -32695.31,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.108",
+      "descricao": "PARCELAMENTO DE INSS",
+      "ant": 0.0,
+      "deb": 15450.21,
+      "cre": 927012.88,
+      "at": -911562.67,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.03.112",
+      "descricao": "PARCELAMENTO PERT (2015-2016)",
+      "ant": -131117.09,
+      "deb": 11244.56,
+      "cre": 6564.51,
+      "at": -126437.04,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.000",
+      "descricao": "TITULOS A PAGAR",
+      "ant": -365431.38,
+      "deb": 0.0,
+      "cre": 42504.7,
+      "at": -407936.08,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.016",
+      "descricao": "MACER DROGUISTAS LTDA.",
+      "ant": -175189.19,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -175189.19,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.025",
+      "descricao": "DROGARIA JURUCE",
+      "ant": -238.99,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -238.99,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.026",
+      "descricao": "CARAMANTI & CARAMANTI LTDA.",
+      "ant": -28724.18,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -28724.18,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.083",
+      "descricao": "IPANEMA DISTRIBUIDORA LTDA",
+      "ant": -140343.95,
+      "deb": 0.0,
+      "cre": 271.35,
+      "at": -140615.3,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.091",
+      "descricao": "DROGARIA FARMA PONTE LTDA",
+      "ant": -1780.9,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -1780.9,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.092",
+      "descricao": "DROGA LEAO CENTRO LTDA",
+      "ant": -48.05,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -48.05,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.095",
+      "descricao": "DROGARIA ILHA BELA HIPER LTDA",
+      "ant": -10330.04,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -10330.04,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.096",
+      "descricao": "SOS FARMA PONTE LTDA",
+      "ant": 0.0,
+      "deb": 0.0,
+      "cre": 42233.35,
+      "at": -42233.35,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.099",
+      "descricao": "FARMA EXPRESS DROGARIAS LTDA",
+      "ant": -4577.81,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -4577.81,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.102",
+      "descricao": "DROGARIA CARAMANTILTDA",
+      "ant": -3830.23,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -3830.23,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.05.107",
+      "descricao": "DROGAS MEDICAS DROGARIA E PERFUMARIA LTDA",
+      "ant": -368.04,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -368.04,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.06.000",
+      "descricao": "RECEB. P/ CONTA DE TERCEIROS",
+      "ant": -912872.78,
+      "deb": 10044.99,
+      "cre": 32033.35,
+      "at": -934861.14,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.06.032",
+      "descricao": "RECEB. P/ CONTA DE FARMA PONTE ADM. DE CONVÊNIOS",
+      "ant": -797163.94,
+      "deb": 0.0,
+      "cre": 21630.35,
+      "at": -818794.29,
+      "h": false
+    },
+    {
+      "conta": "2.1.1.06.035",
+      "descricao": "RECEBIMENTO RECARGA CELULAR",
+      "ant": -115708.84,
+      "deb": 10044.99,
+      "cre": 10403.0,
+      "at": -116066.85,
+      "h": false
+    },
+    {
+      "conta": "2.2.0.00.000",
+      "descricao": "NAO CIRCULANTE",
+      "ant": -53396.52,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -53396.52,
+      "h": true
+    },
+    {
+      "conta": "2.2.1.00.000",
+      "descricao": "GARANTIA DE CONTRATO",
+      "ant": -53396.52,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -53396.52,
+      "h": true
+    },
+    {
+      "conta": "2.2.1.02.000",
+      "descricao": "GARANTIA DE CONTRATO",
+      "ant": -53396.52,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -53396.52,
+      "h": false
+    },
+    {
+      "conta": "2.2.1.02.002",
+      "descricao": "BANCO SANTANDER S.A.",
+      "ant": -53396.52,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -53396.52,
+      "h": false
+    },
+    {
+      "conta": "2.4.0.00.000",
+      "descricao": "PATRIMONIO LIQUIDO",
+      "ant": -9641283.69,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -9641283.69,
+      "h": true
+    },
+    {
+      "conta": "2.4.1.00.000",
+      "descricao": "SUBST. LIQ. INEXIGIVEL",
+      "ant": -9641283.69,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -9641283.69,
+      "h": true
+    },
+    {
+      "conta": "2.4.1.01.000",
+      "descricao": "CAPITAL SOCIAL",
+      "ant": -201000.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -201000.0,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.01.002",
+      "descricao": "CAPITAL SÓCIO LUIZ MARCOS CARAMANTI",
+      "ant": -1014.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -1014.0,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.01.011",
+      "descricao": "CAPITAL SÓCIA M2K PARTICIPAÇÕES LTDA",
+      "ant": -199986.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -199986.0,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.02.000",
+      "descricao": "RESERVAS DE CAPITAL",
+      "ant": -317057.59,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -317057.59,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.02.004",
+      "descricao": "RESERVA DE CAPITAL",
+      "ant": -317057.59,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -317057.59,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.03.000",
+      "descricao": "LUCROS OU PREJUIZOS ACUMULADOS",
+      "ant": -9123226.1,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -9123226.1,
+      "h": false
+    },
+    {
+      "conta": "2.4.1.03.001",
+      "descricao": "LUCROS ACUMULADOS",
+      "ant": -9123226.1,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -9123226.1,
+      "h": false
+    },
+    {
+      "conta": "3.0.0.00.000",
+      "descricao": "DESPESAS",
+      "ant": 22019591.8,
+      "deb": 2152671.42,
+      "cre": 94849.34,
+      "at": 24077413.88,
+      "h": true
+    },
+    {
+      "conta": "3.1.0.00.000",
+      "descricao": "DESPESAS OPERACIONAIS",
+      "ant": 22019591.8,
+      "deb": 2152671.42,
+      "cre": 94849.34,
+      "at": 24077413.88,
+      "h": true
+    },
+    {
+      "conta": "3.1.1.00.000",
+      "descricao": "DESPESAS E GASTOS OPERACIONAIS",
+      "ant": 22019591.8,
+      "deb": 2152671.42,
+      "cre": 94849.34,
+      "at": 24077413.88,
+      "h": true
+    },
+    {
+      "conta": "3.1.1.01.000",
+      "descricao": "DESPESAS COM PESSOAL",
+      "ant": 15135123.17,
+      "deb": 1310320.71,
+      "cre": 75805.99,
+      "at": 16369637.89,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.003",
+      "descricao": "F.G.T.S.",
+      "ant": 976515.72,
+      "deb": 74720.15,
+      "cre": 0.0,
+      "at": 1051235.87,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.004",
+      "descricao": "PREVIDENCIA SOCIAL",
+      "ant": 2682839.58,
+      "deb": 190189.33,
+      "cre": 0.0,
+      "at": 2873028.91,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.005",
+      "descricao": "SALARIOS E ORDENADOS",
+      "ant": 6997371.32,
+      "deb": 566222.17,
+      "cre": 39851.13,
+      "at": 7523742.36,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.006",
+      "descricao": "HORAS EXTRAS",
+      "ant": 296427.43,
+      "deb": 13622.62,
+      "cre": 0.0,
+      "at": 310050.05,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.009",
+      "descricao": "DESPESAS COM VALE TRANSPORTE",
+      "ant": 198985.91,
+      "deb": 21947.5,
+      "cre": 4985.59,
+      "at": 215947.82,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.013",
+      "descricao": "AVISO PREVIO INDENIZADO",
+      "ant": 65398.98,
+      "deb": 13092.84,
+      "cre": 0.0,
+      "at": 78491.82,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.014",
+      "descricao": "ADICIONAL NOTURNO",
+      "ant": 62005.72,
+      "deb": 4390.65,
+      "cre": 0.0,
+      "at": 66396.37,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.015",
+      "descricao": "DESCANSO SEMANAL REMUNERADO - DSR",
+      "ant": 216170.61,
+      "deb": 10776.53,
+      "cre": 0.0,
+      "at": 226947.14,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.017",
+      "descricao": "COMISSOES",
+      "ant": 330773.66,
+      "deb": 22144.14,
+      "cre": 0.0,
+      "at": 352917.8,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.024",
+      "descricao": "DESPESAS COM VALE REFEICAO",
+      "ant": 362121.1,
+      "deb": 28588.0,
+      "cre": 288.0,
+      "at": 390421.1,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.030",
+      "descricao": "BOLSA AUXILIO DE ESTAGIARIOS",
+      "ant": 16081.68,
+      "deb": 1412.25,
+      "cre": 0.25,
+      "at": 17493.68,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.031",
+      "descricao": "SEGURO DE VIDA",
+      "ant": 12083.9,
+      "deb": 0.0,
+      "cre": 1522.8,
+      "at": 10561.1,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.034",
+      "descricao": "13º SALÁRIO",
+      "ant": 758131.47,
+      "deb": 61382.01,
+      "cre": 0.0,
+      "at": 819513.48,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.037",
+      "descricao": "FÉRIAS",
+      "ant": 1026754.32,
+      "deb": 107628.16,
+      "cre": 3783.57,
+      "at": 1130598.91,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.043",
+      "descricao": "PREMIOS DIVERSOS",
+      "ant": 841222.49,
+      "deb": 145671.03,
+      "cre": 0.0,
+      "at": 986893.52,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.047",
+      "descricao": "ASSISTENCIA MEDICA",
+      "ant": 49987.47,
+      "deb": 31689.36,
+      "cre": 25374.65,
+      "at": 56302.18,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.052",
+      "descricao": "BANCO DE HORAS",
+      "ant": 16836.4,
+      "deb": 803.21,
+      "cre": 0.0,
+      "at": 17639.61,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.01.054",
+      "descricao": "RESCISÃO",
+      "ant": 225415.41,
+      "deb": 16040.76,
+      "cre": 0.0,
+      "at": 241456.17,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.02.000",
+      "descricao": "DESPESAS COM VEICULOS",
+      "ant": 23465.33,
+      "deb": 800.0,
+      "cre": 0.0,
+      "at": 24265.33,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.02.001",
+      "descricao": "COMBUSTIVEIS E LUBRIFICANTES",
+      "ant": 15261.41,
+      "deb": 800.0,
+      "cre": 0.0,
+      "at": 16061.41,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.02.005",
+      "descricao": "PECAS E ACESSORIOS",
+      "ant": 5823.92,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 5823.92,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.02.009",
+      "descricao": "ALUGUEL - MOTO",
+      "ant": 2380.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 2380.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.000",
+      "descricao": "DESPESAS GERAIS E ADMINISTRATIVAS",
+      "ant": 5384078.1,
+      "deb": 714888.06,
+      "cre": 19043.35,
+      "at": 6079922.81,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.001",
+      "descricao": "AGUA",
+      "ant": 22295.1,
+      "deb": 1634.8,
+      "cre": 0.0,
+      "at": 23929.9,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.003",
+      "descricao": "ALUGUEL - IMOVEL",
+      "ant": 2870910.36,
+      "deb": 236181.46,
+      "cre": 19043.35,
+      "at": 3088048.47,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.005",
+      "descricao": "BENS VALORES IRRELEVANTES",
+      "ant": 579.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 579.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.006",
+      "descricao": "BILHETES E PASSAGENS",
+      "ant": 26025.48,
+      "deb": 767.18,
+      "cre": 0.0,
+      "at": 26792.66,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.008",
+      "descricao": "CONSERVACAO E MANUTENCAO",
+      "ant": 120523.72,
+      "deb": 2340.0,
+      "cre": 0.0,
+      "at": 122863.72,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.011",
+      "descricao": "HONORARIOS S/ SERV. TERCEIROS",
+      "ant": 324.2,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 324.2,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.013",
+      "descricao": "IMPRESSOS E MAT. ESCRITORIO",
+      "ant": 76.5,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 76.5,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.014",
+      "descricao": "LANCHES E REFEICOES",
+      "ant": 2173.0,
+      "deb": 175.0,
+      "cre": 0.0,
+      "at": 2348.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.015",
+      "descricao": "MATERIAL GASTO E CONSUMO",
+      "ant": 2470.29,
+      "deb": 257.9,
+      "cre": 0.0,
+      "at": 2728.19,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.016",
+      "descricao": "PUBLICIDADE E PROPAGANDA",
+      "ant": 57495.77,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 57495.77,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.017",
+      "descricao": "SEGURO C/ SINISTRO",
+      "ant": 968.44,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 968.44,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.021",
+      "descricao": "ROUBO DE FERIAS",
+      "ant": 37596.54,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 37596.54,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.022",
+      "descricao": "LICENCA DE USO DE SOFTWARE",
+      "ant": 8426.97,
+      "deb": 1465.1,
+      "cre": 0.0,
+      "at": 9892.07,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.026",
+      "descricao": "TELEFONE E INTERNET",
+      "ant": 3987.12,
+      "deb": 309.56,
+      "cre": 0.0,
+      "at": 4296.68,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.027",
+      "descricao": "CONDOMINIO",
+      "ant": 110485.83,
+      "deb": 8193.78,
+      "cre": 0.0,
+      "at": 118679.61,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.028",
+      "descricao": "ENERGIA ELETRICA",
+      "ant": 575201.89,
+      "deb": 40378.17,
+      "cre": 0.0,
+      "at": 615580.06,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.033",
+      "descricao": "LOCACAO DE MAQUINAS E EQUIPAMENTOS",
+      "ant": 1388.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 1388.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.034",
+      "descricao": "SERVICOS PRESTADOS PJ",
+      "ant": 1419613.65,
+      "deb": 366073.57,
+      "cre": 0.0,
+      "at": 1785687.22,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.036",
+      "descricao": "FUNDO DE PROMOCAO",
+      "ant": 18154.38,
+      "deb": 1556.08,
+      "cre": 0.0,
+      "at": 19710.46,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.037",
+      "descricao": "MANUTENCAO E CONSERVACAO EM IMOVEIS",
+      "ant": 5185.12,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 5185.12,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.042",
+      "descricao": "SERVICOS- DEDETIZACAO",
+      "ant": 15597.72,
+      "deb": 1329.66,
+      "cre": 0.0,
+      "at": 16927.38,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.043",
+      "descricao": "SERVICOS- MONITORAMENTO",
+      "ant": 49293.36,
+      "deb": 49651.3,
+      "cre": 0.0,
+      "at": 98944.66,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.047",
+      "descricao": "SERVICOS DE MEDICINA DO TRABALHO",
+      "ant": 35285.66,
+      "deb": 4574.5,
+      "cre": 0.0,
+      "at": 39860.16,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.03.054",
+      "descricao": "PERDA COM DIFERENÇA DE CAIXA",
+      "ant": 20.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 20.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.04.000",
+      "descricao": "DESPESAS COM COMERCIALIZAÇÃO",
+      "ant": 19504.11,
+      "deb": 1059.0,
+      "cre": 0.0,
+      "at": 20563.11,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.04.001",
+      "descricao": "FRETES E CARRETOS",
+      "ant": 19504.11,
+      "deb": 1059.0,
+      "cre": 0.0,
+      "at": 20563.11,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.000",
+      "descricao": "DESPESAS FINANCEIRAS",
+      "ant": 1182550.43,
+      "deb": 57244.37,
+      "cre": 0.0,
+      "at": 1239794.8,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.001",
+      "descricao": "DESPESAS BANCARIAS",
+      "ant": 109303.21,
+      "deb": 5439.79,
+      "cre": 0.0,
+      "at": 114743.0,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.002",
+      "descricao": "JUROS DE MORA COMIS. PERM.",
+      "ant": 81190.55,
+      "deb": 4484.68,
+      "cre": 0.0,
+      "at": 85675.23,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.003",
+      "descricao": "DESCONTOS CONCEDIDOS",
+      "ant": 31042.53,
+      "deb": 1985.26,
+      "cre": 0.0,
+      "at": 33027.79,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.006",
+      "descricao": "JUROS S/ OPERACOES DE CREDITO",
+      "ant": 206725.13,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 206725.13,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.012",
+      "descricao": "TAXA DE BOLETOS",
+      "ant": 664.85,
+      "deb": 57.74,
+      "cre": 0.0,
+      "at": 722.59,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.013",
+      "descricao": "IOF",
+      "ant": 424.03,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 424.03,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.05.014",
+      "descricao": "TAXA ADM. CARTÕES",
+      "ant": 753200.13,
+      "deb": 45276.9,
+      "cre": 0.0,
+      "at": 798477.03,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.000",
+      "descricao": "DESPESAS TRIBUTÁRIAS",
+      "ant": 272390.4,
+      "deb": 68154.26,
+      "cre": 0.0,
+      "at": 340544.66,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.001",
+      "descricao": "IMPOSTOS TAXAS E LICENCAS",
+      "ant": 29670.21,
+      "deb": 377.15,
+      "cre": 0.0,
+      "at": 30047.36,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.005",
+      "descricao": "MULTAS E JUROS DE MORA",
+      "ant": 179514.87,
+      "deb": 66399.21,
+      "cre": 0.0,
+      "at": 245914.08,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.006",
+      "descricao": "MULTAS POR INFRACAO - AIIM",
+      "ant": 4673.03,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 4673.03,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.008",
+      "descricao": "AJUSTES CONTAS TRIBUTARIAS",
+      "ant": 6311.64,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 6311.64,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.009",
+      "descricao": "I.P.T.U.",
+      "ant": 49660.63,
+      "deb": 1377.9,
+      "cre": 0.0,
+      "at": 51038.53,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.06.012",
+      "descricao": "CONSELHO REGIONAL DE FARMÁCIA - CRF",
+      "ant": 2560.02,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 2560.02,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.07.000",
+      "descricao": "ENCARGOS DO EXERCÍCIO",
+      "ant": 2480.26,
+      "deb": 205.02,
+      "cre": 0.0,
+      "at": 2685.28,
+      "h": false
+    },
+    {
+      "conta": "3.1.1.07.001",
+      "descricao": "DEPRECIACAO",
+      "ant": 2480.26,
+      "deb": 205.02,
+      "cre": 0.0,
+      "at": 2685.28,
+      "h": false
+    },
+    {
+      "conta": "4.0.0.00.000",
+      "descricao": "RECEITAS",
+      "ant": -73232824.49,
+      "deb": 1224278.98,
+      "cre": 5939870.67,
+      "at": -77948416.18,
+      "h": true
+    },
+    {
+      "conta": "4.1.0.00.000",
+      "descricao": "RECEITAS OPERACIONAIS",
+      "ant": -72955760.27,
+      "deb": 1224278.98,
+      "cre": 5928753.14,
+      "at": -77660234.43,
+      "h": true
+    },
+    {
+      "conta": "4.1.1.00.000",
+      "descricao": "RECEITAS C/VENDAS MERCAD. E SERVIÇOS",
+      "ant": -72955760.27,
+      "deb": 1224278.98,
+      "cre": 5928753.14,
+      "at": -77660234.43,
+      "h": true
+    },
+    {
+      "conta": "4.1.1.01.000",
+      "descricao": "VENDAS LIQUIDAS",
+      "ant": -72955760.27,
+      "deb": 1224278.98,
+      "cre": 5928753.14,
+      "at": -77660234.43,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.001",
+      "descricao": "VENDAS A VISTA - MERCADORIAS",
+      "ant": -11410924.9,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -11410924.9,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.002",
+      "descricao": "VENDAS A PRAZO - MERCADORIAS",
+      "ant": -53814960.1,
+      "deb": 492969.79,
+      "cre": 5139960.31,
+      "at": -58461950.62,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.004",
+      "descricao": "COMISSÃO POR SERVIÇO PRESTADO",
+      "ant": -6775.23,
+      "deb": 0.0,
+      "cre": 415.32,
+      "at": -7190.55,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.005",
+      "descricao": "(-) COFINS",
+      "ant": 684568.04,
+      "deb": 74291.7,
+      "cre": 12079.59,
+      "at": 746780.15,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.006",
+      "descricao": "(-) PIS",
+      "ant": 148133.4,
+      "deb": 16142.43,
+      "cre": 2771.01,
+      "at": 161504.82,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.007",
+      "descricao": "(-) VENDAS ANULADAS A VISTA",
+      "ant": 121748.72,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 121748.72,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.008",
+      "descricao": "(-) VENDAS ANULADAS A PRAZO",
+      "ant": 365352.63,
+      "deb": 24151.61,
+      "cre": 0.0,
+      "at": 389504.24,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.009",
+      "descricao": "(-) ICMS DEB. VENDAS",
+      "ant": 1872675.14,
+      "deb": 608020.89,
+      "cre": 2914.91,
+      "at": 2477781.12,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.014",
+      "descricao": "VENDAS INTERCIAS",
+      "ant": -5372659.19,
+      "deb": 0.0,
+      "cre": 259811.31,
+      "at": -5632470.5,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.016",
+      "descricao": "FARMACIA POPULAR",
+      "ant": -5424694.88,
+      "deb": 0.0,
+      "cre": 492969.79,
+      "at": -5917664.67,
+      "h": false
+    },
+    {
+      "conta": "4.1.1.01.017",
+      "descricao": "SUBLOCAÇÃO DE IMÓVEL",
+      "ant": -118223.9,
+      "deb": 8702.56,
+      "cre": 17830.9,
+      "at": -127352.24,
+      "h": false
+    },
+    {
+      "conta": "4.2.0.00.000",
+      "descricao": "RECEITAS FINANCEIRAS",
+      "ant": -277064.22,
+      "deb": 0.0,
+      "cre": 11117.53,
+      "at": -288181.75,
+      "h": true
+    },
+    {
+      "conta": "4.2.1.00.000",
+      "descricao": "RECEITAS COM OPERAÇÕES FINANCEIRAS",
+      "ant": -277064.22,
+      "deb": 0.0,
+      "cre": 11117.53,
+      "at": -288181.75,
+      "h": true
+    },
+    {
+      "conta": "4.2.1.01.000",
+      "descricao": "RECEITAS LÍQUIDAS",
+      "ant": -277064.22,
+      "deb": 0.0,
+      "cre": 11117.53,
+      "at": -288181.75,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.001",
+      "descricao": "DESCONTOS OBTIDOS",
+      "ant": -241741.92,
+      "deb": 0.0,
+      "cre": 4639.72,
+      "at": -246381.64,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.002",
+      "descricao": "JUROS RECEBIDOS S/ APLICACAO",
+      "ant": -56.23,
+      "deb": 0.0,
+      "cre": 2.39,
+      "at": -58.62,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.003",
+      "descricao": "REEMBOLSO DE DESPESAS",
+      "ant": -10444.52,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -10444.52,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.008",
+      "descricao": "AJUSTES CONTAS TRIBUTARIAS",
+      "ant": -1061.75,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -1061.75,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.009",
+      "descricao": "OUTRAS RECEITAS",
+      "ant": -12986.62,
+      "deb": 0.0,
+      "cre": 1156.23,
+      "at": -14142.85,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.010",
+      "descricao": "BONIFICACAO",
+      "ant": -10637.44,
+      "deb": 0.0,
+      "cre": 5319.19,
+      "at": -15956.63,
+      "h": false
+    },
+    {
+      "conta": "4.2.1.01.015",
+      "descricao": "JUROS SELIC",
+      "ant": -135.74,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -135.74,
+      "h": false
+    },
+    {
+      "conta": "5.0.0.00.000",
+      "descricao": "CUSTO DAS MERCADORIAS",
+      "ant": 49732134.52,
+      "deb": 3207958.7,
+      "cre": 66458.23,
+      "at": 52873634.99,
+      "h": true
+    },
+    {
+      "conta": "5.1.0.00.000",
+      "descricao": "CUSTOS EM APROPRIAÇÃO",
+      "ant": 49732134.52,
+      "deb": 3207958.7,
+      "cre": 66458.23,
+      "at": 52873634.99,
+      "h": true
+    },
+    {
+      "conta": "5.1.1.00.000",
+      "descricao": "ESTOQUE INICIAL",
+      "ant": 15616170.11,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 15616170.11,
+      "h": true
+    },
+    {
+      "conta": "5.1.1.01.000",
+      "descricao": "ESTOQUE INICIAL",
+      "ant": 15616170.11,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 15616170.11,
+      "h": false
+    },
+    {
+      "conta": "5.1.1.01.001",
+      "descricao": "MERCADORIAS EM ESTOQUE",
+      "ant": 15616170.11,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 15616170.11,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.00.000",
+      "descricao": "CUSTO EM APROPRIAÇÃO",
+      "ant": 49263956.21,
+      "deb": 3207958.7,
+      "cre": 66458.23,
+      "at": 52405456.68,
+      "h": true
+    },
+    {
+      "conta": "5.1.2.01.000",
+      "descricao": "CUSTO DE MERCADORIAS",
+      "ant": 49263956.21,
+      "deb": 3207958.7,
+      "cre": 66458.23,
+      "at": 52405456.68,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.003",
+      "descricao": "COMPRAS A PRAZO - MERCADORIAS",
+      "ant": 35732492.41,
+      "deb": 3143668.67,
+      "cre": 15395.26,
+      "at": 38860765.82,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.004",
+      "descricao": "TRANSFERENCIAS DE MERCADORIAS",
+      "ant": 862817.05,
+      "deb": 47474.91,
+      "cre": 51062.97,
+      "at": 859228.99,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.007",
+      "descricao": "MERCADORIA EM BONIFICACAO",
+      "ant": 1426.0,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 1426.0,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.009",
+      "descricao": "(-) TRANSF. ENVIADA",
+      "ant": -378014.83,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -378014.83,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.012",
+      "descricao": "(-) COMPRAS ANULADAS A PRAZO",
+      "ant": -580685.19,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -580685.19,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.013",
+      "descricao": "(-) ICMS CREDITADO",
+      "ant": -256529.46,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -256529.46,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.015",
+      "descricao": "ICMS RETIDO/ ANTECIPADO",
+      "ant": 45283.54,
+      "deb": 17.0,
+      "cre": 0.0,
+      "at": 45300.54,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.016",
+      "descricao": "COMPRAS A PRAZO DE MERCADORIAS INTERCIAS",
+      "ant": 13752239.49,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": 13752239.49,
+      "h": false
+    },
+    {
+      "conta": "5.1.2.01.018",
+      "descricao": "BAIXA PRODUTOS VENCIDOS / DANIFICADOS",
+      "ant": 84927.2,
+      "deb": 16798.12,
+      "cre": 0.0,
+      "at": 101725.32,
+      "h": false
+    },
+    {
+      "conta": "5.1.3.00.000",
+      "descricao": "ESTOQUE FINAL",
+      "ant": -15147991.8,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -15147991.8,
+      "h": true
+    },
+    {
+      "conta": "5.1.3.01.000",
+      "descricao": "ESTOQUE FINAL",
+      "ant": -15147991.8,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -15147991.8,
+      "h": false
+    },
+    {
+      "conta": "5.1.3.01.001",
+      "descricao": "(-) MERCADORIAS EM ESTOQUE",
+      "ant": -15147991.8,
+      "deb": 0.0,
+      "cre": 0.0,
+      "at": -15147991.8,
+      "h": false
+    },
+    {
+      "conta": "9.9.9.99.999",
+      "descricao": "CONTA PADRÃO",
+      "ant": 0.0,
+      "deb": 867.1,
+      "cre": 867.1,
+      "at": 0.0,
+      "h": false
+    }
+  ]
+}
+    </script>
+
+  <script>
+    const data = JSON.parse(document.getElementById('dashboard-data').textContent);
+
+    function formatBRL(val) {
+      if (val === null || val === undefined) return '-';
+      const isNegative = val < 0;
+      const absoluteVal = Math.abs(val);
+      const str = absoluteVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      return isNegative ? `(${str})` : str;
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+      window.dispatchEvent(new Event('resize')); // Re-render charts
+    }
+
+    // Populating Tables
+    function populateTables() {
+      // DRE
+      const dreBody = document.getElementById('dre-table-body');
+      dreBody.innerHTML = ''; // Clear
+      data.dre.forEach(row => {
+        const tr = document.createElement('tr');
+        if (row.destaque) tr.className = 'highlight-row';
+        tr.innerHTML = `
+                    <td>${row.descricao}</td>
+                    <td>${formatBRL(row.jan)}</td>
+                    <td style="font-weight: 700">${formatBRL(row.feb)}</td>
+                `;
+        dreBody.appendChild(tr);
+      });
+
+      // Balancete
+      const balBody = document.getElementById('balancete-table-body');
+      balBody.innerHTML = '';
+      data.balancete.forEach(item => {
+        const tr = document.createElement('tr');
+        if (item.h) tr.className = 'header-row';
+        tr.innerHTML = `
+                    <td>${item.conta}</td>
+                    <td>${item.descricao}</td>
+                    <td>${formatBRL(item.ant)}</td>
+                    <td>${formatBRL(item.deb)}</td>
+                    <td>${formatBRL(item.cre)}</td>
+                    <td>${formatBRL(item.at)}</td>
+                `;
+        balBody.appendChild(tr);
+      });
+    }
+
+    // Populating Indices
+    function populateIndices() {
+      const container = document.getElementById('indices-container');
+      const sections = ['liquidez', 'endividamento', 'rentabilidade'];
+      sections.forEach(sec => {
+        data.indices[sec].forEach(idx => {
+          const card = document.createElement('div');
+          card.className = 'card index-card';
+          card.innerHTML = `
+                        <div class="index-header">
+                            <span class="index-name">${idx.nome}</span>
+                            <span class="index-badge badge-${idx.status}">${idx.status}</span>
+                        </div>
+                        <div class="index-value">${idx.valor}${idx.sufixo || ''}</div>
+                        ${idx.formula ? `<span class="index-formula">${idx.formula}</span>` : ''}
+                        <div class="index-interpret">${idx.interpretacao}</div>
+                    `;
+          container.appendChild(card);
+        });
+      });
+    }
+
+    // Charts
+    function initCharts() {
+      // 1. Evolution Chart
+      new ApexCharts(document.querySelector("#chart-evolution"), {
+        series: [
+          { name: 'Resultado Mensal', type: 'column', data: data.resultado_mensal.resultado },
+          { name: 'Resultado Acumulado', type: 'line', data: data.resultado_mensal.acumulado }
+        ],
+        chart: { height: 350, type: 'line', background: 'transparent', toolbar: { show: false } },
+        stroke: { width: [0, 4], curve: 'smooth' },
+        colors: ['#38bdf8', '#22c55e'],
+        xaxis: { categories: data.resultado_mensal.meses },
+        yaxis: [{ title: { text: 'Mensal' } }, { opposite: true, title: { text: 'Acumulado' } }],
+        theme: { mode: 'dark' },
+        grid: { borderColor: 'rgba(255,255,255,0.05)' }
+      }).render();
+
+      // 2. Revenue Mix
+      new ApexCharts(document.querySelector("#chart-revenue-mix"), {
+        series: data.composicao_receitas.valores_dez,
+        chart: { type: 'donut', height: 350 },
+        labels: ["Jan", "Fev"],
+        colors: ['#38bdf8', '#818cf8'],
+        theme: { mode: 'dark' },
+        legend: { position: 'bottom' },
+        stroke: { show: false }
+      }).render();
+
+      // 3. Variations Bar
+      new ApexCharts(document.querySelector("#chart-variations"), {
+        series: data.variacoes.map(v => ({ name: v.label, data: v.values })),
+        chart: { type: 'bar', height: 300, background: 'transparent', toolbar: { show: false } },
+        plotOptions: { bar: { horizontal: false, columnWidth: '55%' } },
+        xaxis: { categories: ['Janeiro', 'Fevereiro'] },
+        colors: ['#f87171', '#fbbf24', '#38bdf8', '#818cf8'],
+        theme: { mode: 'dark' },
+        grid: { borderColor: 'rgba(255,255,255,0.05)' }
+      }).render();
+
+      // 4. Expenses Mix
+      new ApexCharts(document.querySelector("#chart-expenses-mix"), {
+        series: data.composicao_despesas.valores_dez,
+        chart: { type: 'polarArea', height: 400 },
+        labels: data.composicao_despesas.labels,
+        colors: ['#38bdf8', '#fbbf24', '#f87171', '#818cf8', '#94a3b8'],
+        theme: { mode: 'dark' },
+        legend: { position: 'bottom' },
+        fill: { opacity: 0.8 }
+      }).render();
+    }
+
+    function exportPDF() {
+      const element = document.getElementById('report-content');
+      const originalClass = element.className;
+
+      // Ativa o modo de exportação (cores sólidas e exibe tudo)
+      element.classList.add('export-mode');
+
+      // Configurações do PDF
+      const opt = {
+        margin: [10, 10],
+        filename: 'Relatorio_Financeiro_Completo_Prioridades_LMC.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#020617',
+          logging: false
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      // Gera o PDF
+      html2pdf().from(element).set(opt).save().then(() => {
+        element.classList.remove('export-mode');
+      }).catch(err => {
+        console.error('Erro na exportação:', err);
+        element.classList.remove('export-mode');
+      });
+    }
+
+    // Dynamic KPIs
+    function populateKPIs() {
+      const lastIdx = data.resultado_mensal.acumulado.length - 1;
+      document.getElementById('kpi-res-acumulado').textContent = formatBRL(data.resultado_mensal.acumulado[lastIdx]);
+
+      const recLiquida = data.dre.find(r => r.descricao === 'RECEITA LÍQUIDA');
+      document.getElementById('kpi-receita-atual').textContent = recLiquida ? formatBRL(recLiquida.feb) : '-';
+
+      document.getElementById('kpi-liquidez-corrente').textContent = data.indices.liquidez[0].valor.toFixed(2);
+      document.getElementById('kpi-margem-bruta').textContent = data.indices.rentabilidade[0].valor + '%';
+
+      // New KPIs
+      document.getElementById('kpi-ebitda').textContent = formatBRL(data.kpis_avancados.ebitda);
+      document.getElementById('kpi-margem-liquida').textContent = data.kpis_avancados.margem_liquida + '%';
+      document.getElementById('kpi-giro-estoque').textContent = data.kpis_avancados.giro_estoque_dias + ' dias';
+      document.getElementById('kpi-pmr').textContent = data.kpis_avancados.prazos.recebimento + ' dias';
+    }
+
+    // Initialize Everything
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      populateKPIs();
+      populateTables();
+      populateIndices();
+      initCharts();
+    });
+  </script>
+</body>
+
+</html>
